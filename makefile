@@ -10,6 +10,11 @@ DOCKER_ARGS ?=
 
 .PHONY: docker docker-push docker-pull enter enter-root
 
+data: data/train.json
+
+data/train.json:
+	unzip a2_code.zip
+
 JUPYTER_PASSWORD ?= jupyter
 JUPYTER_PORT ?= 8888
 .PHONY: jupyter
@@ -21,6 +26,9 @@ jupyter:
 		--NotebookApp.password="$(shell $(RUN) \
 			python3 -c \
 			"from notebook.auth import passwd; print(passwd('$(JUPYTER_PASSWORD)', 'sha1'))")"
+
+clean:
+	rm -rf data
 
 docker:
 	docker build $(DOCKER_ARGS) --tag $(IMAGE):$(GIT_TAG) .

@@ -507,7 +507,7 @@ def compute_topk_similar(
     top_k = torch.topk(similarity, k+1)
 
     # Skip the first entry, which will be the original vector
-    return top_k.indices[1:]
+    return top_k.indices[1:].tolist()
 
 
 @torch.no_grad()

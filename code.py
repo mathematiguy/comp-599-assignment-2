@@ -658,9 +658,18 @@ if __name__ == "__main__":
     print(f"surrounding_expanded: {surrounding_expanded}")
     print(f"current_expanded: {current_expanded}")
 
+    # Train CBOW
+    sources_cb, targets_cb = cbow_preprocessing(text_indices, window_size=2)
 
-    # model_cb = CBOW(num_words=len(word_to_index), embed_dim=200).to(device)
-    # optimizer = torch.optim.Adam(model_cb.parameters())
+    loader_cb = DataLoader(
+        Word2VecDataset(sources_cb, targets_cb),
+        batch_size=batch_size,
+        shuffle=True,
+        collate_fn=collate_cbow,
+    )
+
+    model_cb = CBOW(num_words=len(word_to_index), embed_dim=200).to(device)
+    optimizer = torch.optim.Adam(model_cb.parameters())
 
     # for epoch in range(n_epochs):
     #     loss = train_w2v(model_cb, optimizer, loader_cb, device=device).item()

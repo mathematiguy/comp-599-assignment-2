@@ -652,14 +652,12 @@ if __name__ == "__main__":
     print(f"surroundings: {surroundings}")
     print(f"currents: {currents}")
 
-    # # Train CBOW
-    # sources_cb, targets_cb = cbow_preprocessing(text_indices, window_size=2)
-    # loader_cb = DataLoader(
-    #     Word2VecDataset(sources_cb, targets_cb),
-    #     batch_size=batch_size,
-    #     shuffle=True,
-    #     collate_fn=collate_cbow,
-    # )
+    surrounding_expanded, current_expanded = expand_surrounding_words(
+        surroundings, currents
+    )
+    print(f"surrounding_expanded: {surrounding_expanded}")
+    print(f"current_expanded: {current_expanded}")
+
 
     # model_cb = CBOW(num_words=len(word_to_index), embed_dim=200).to(device)
     # optimizer = torch.optim.Adam(model_cb.parameters())

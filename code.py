@@ -13,6 +13,9 @@ import torch.nn.functional as F
 from torch.utils.data import DataLoader
 from tqdm.auto import tqdm
 
+flatten_list = lambda l: [x for y in l for x in y]
+
+
 
 # ########################## PART 1: PROVIDED CODE ##############################
 def load_datasets(data_directory: str) -> "Union[dict, dict]":

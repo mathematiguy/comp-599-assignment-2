@@ -390,16 +390,13 @@ def cbow_preprocessing(indices_list: "list[list[int]]", window_size: int = 2):
 
 
 def skipgram_preprocessing(indices_list: "list[list[int]]", window_size: int = 2):
-    # TODO: your work here
-
     sources = []
     targets = []
     for indices in indices_list:
         surrounding, current = build_current_surrounding_pairs(indices, window_size)
-        for sur, cur in zip(surrounding, current):
-            for s in sur:
-                sources.append(s)
-                targets.append(cur)
+        surroundings_expanded, current_expanded = expand_surrounding_words(surrounding, current)
+        sources += surroundings_expanded
+        targets += current_expanded
 
     return sources, targets
 

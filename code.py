@@ -538,8 +538,22 @@ def word_analogy(
     index_to_word: "dict[int, str]",
     k: int = 5,
 ) -> "list[str]":
-    # TODO: your work here
-    pass
+
+    w2v_emb_weight = model.emb.weight
+
+    word_a_index = index_map[word_a]
+    word_b_index = index_map[word_b]
+    word_c_index = index_map[word_c]
+
+    word_a_emb = w2v_emb_weight[word_a_index]
+    word_b_emb = w2v_emb_weight[word_b_index]
+    word_c_emb = w2v_emb_weight[word_c_index]
+
+    analogy_emb = word_a_emb - word_b_emb + word_c_emb
+    analogy_top_k = compute_topk_similar(analogy_emb, w2v_emb_weight, k)
+    results = [index_to_word[idx] for idx in analogy_top_k.tolist()]
+
+    return results
 
 
 # ######################## PART 2: YOUR WORK STARTS HERE ########################

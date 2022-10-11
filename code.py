@@ -518,7 +518,7 @@ def retrieve_similar_words(
 ) -> "list[str]":
 
     word_index = index_map[word]
-    w2v_emb_weight = model_sg.emb.weight
+    w2v_emb_weight = model.emb.weight
     word_emb = w2v_emb_weight[word_index, :]
 
     top_k = compute_topk_similar(word_emb, w2v_emb_weight, k)

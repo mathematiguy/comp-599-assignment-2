@@ -524,7 +524,7 @@ def retrieve_similar_words(
     word_emb = w2v_emb_weight[word_index, :]
 
     top_k = compute_topk_similar(word_emb, w2v_emb_weight, k)
-    results = [index_to_word[idx] for idx in top_k.tolist()]
+    results = [index_to_word[idx] for idx in top_k]
 
     return results
 

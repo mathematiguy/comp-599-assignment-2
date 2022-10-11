@@ -640,6 +640,12 @@ if __name__ == "__main__":
     print(f"surroundings: {surroundings}")
     print(f"currents: {currents}")
 
+    surrounding_expanded, current_expanded = expand_surrounding_words(
+        surroundings, currents
+    )
+    print(f"surrounding_expanded: {surrounding_expanded}")
+    print(f"current_expanded: {current_expanded}\n")
+
     indices = [word_to_index[t] for t in text]
     surroundings, currents = build_current_surrounding_pairs(indices, window_size=1)
     print(f"indices: {indices}")

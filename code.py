@@ -651,6 +651,12 @@ if __name__ == "__main__":
     n_epochs = 2
     num_words = 50000
 
+    # sample_size = 100  # Change this if you want to take a subset of data for testing
+    # batch_size = 64
+    # n_epochs = 1
+    # num_words = 50000
+
+
     # Load the data
     data_path = "data"  # Use this if running locally
 
@@ -753,42 +759,52 @@ if __name__ == "__main__":
 
     compute_topk_similar(word_emb, w2v_emb_weight, k)
 
+    # RETRIEVE SIMILAR WORDS
+    word = "man"
 
-    # similar_words_sg = retrieve_similar_words(
-    #     model=model_sg,
-    #     word=word,
-    #     index_map=word_to_index,
-    #     index_to_word=index_to_word,
-    #     k=5,
-    # )
+    similar_words_cb = retrieve_similar_words(
+        model=model_cb,
+        word=word,
+        index_map=word_to_index,
+        index_to_word=index_to_word,
+        k=5,
+    )
 
-    # print(f"(CBOW) Words similar to '{word}' are: {similar_words_cb}")
-    # print(f"(Skip-gram) Words similar to '{word}' are: {similar_words_sg}")
+    similar_words_sg = retrieve_similar_words(
+        model=model_sg,
+        word=word,
+        index_map=word_to_index,
+        index_to_word=index_to_word,
+        k=5,
+    )
 
-    # # COMPUTE WORDS ANALOGIES
-    # a = "man"
-    # b = "woman"
-    # c = "girl"
+    print(f"(CBOW) Words similar to '{word}' are: {similar_words_cb}")
+    print(f"(Skip-gram) Words similar to '{word}' are: {similar_words_sg}")
 
-    # analogies_cb = word_analogy(
-    #     model=model_cb,
-    #     word_a=a,
-    #     word_b=b,
-    #     word_c=c,
-    #     index_map=word_to_index,
-    #     index_to_word=index_to_word,
-    # )
-    # analogies_sg = word_analogy(
-    #     model=model_sg,
-    #     word_a=a,
-    #     word_b=b,
-    #     word_c=c,
-    #     index_map=word_to_index,
-    #     index_to_word=index_to_word,
-    # )
+    # COMPUTE WORDS ANALOGIES
+    a = "man"
+    b = "woman"
+    c = "girl"
 
-    # print(f"CBOW's analogies for {a} - {b} + {c} are: {analogies_cb}")
-    # print(f"Skip-gram's analogies for {a} - {b} + {c} are: {analogies_sg}")
+    analogies_cb = word_analogy(
+        model=model_cb,
+        word_a=a,
+        word_b=b,
+        word_c=c,
+        index_map=word_to_index,
+        index_to_word=index_to_word,
+    )
+    analogies_sg = word_analogy(
+        model=model_sg,
+        word_a=a,
+        word_b=b,
+        word_c=c,
+        index_map=word_to_index,
+        index_to_word=index_to_word,
+    )
+
+    print(f"CBOW's analogies for {a} - {b} + {c} are: {analogies_cb}")
+    print(f"Skip-gram's analogies for {a} - {b} + {c} are: {analogies_sg}")
 
     # # ###################### PART 1: TEST CODE ######################
 

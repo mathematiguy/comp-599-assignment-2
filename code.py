@@ -343,7 +343,14 @@ def p_value_permutation_test(
 
 
 def build_current_surrounding_pairs(indices: "list[int]", window_size: int = 2):
+    '''
+    Given a list of indices, this produces the following:
+        - surrounding_indices: a list of context windows for each index
+        - current_indices: the centre of each context window
 
+    Each context window has constant width of 2 * window_size.
+    Windows at the beginning or end are dropped to ensure this is the case.
+    '''
     # Drop start + end tokens
     current_indices = indices[window_size:-window_size]
 

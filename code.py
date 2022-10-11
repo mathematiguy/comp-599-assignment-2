@@ -467,8 +467,9 @@ class CBOW(nn.Module):
         self.proj = self.nnlm.get_proj()
 
     def forward(self, x: torch.Tensor):
-        # TODO: your work here
-        pass
+        emb_x = self.emb(x).sum(axis=1)
+        proj_x = self.proj(emb_x)
+        return proj_x
 
 
 def compute_topk_similar(

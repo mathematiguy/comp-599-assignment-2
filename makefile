@@ -10,6 +10,9 @@ DOCKER_ARGS ?=
 
 .PHONY: docker docker-push docker-pull enter enter-root
 
+run: data/train.json
+	${RUN} python code.py
+
 data: data/train.json
 
 data/train.json:

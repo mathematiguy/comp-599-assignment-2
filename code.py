@@ -677,7 +677,8 @@ if __name__ == "__main__":
     print(f"surrounding_expanded: {surrounding_expanded}")
     print(f"current_expanded: {current_expanded}")
 
-    # Train CBOW
+    # Training CBOW
+    print("Training CBOW...")
     sources_cb, targets_cb = cbow_preprocessing(text_indices, window_size=2)
 
     loader_cb = DataLoader(

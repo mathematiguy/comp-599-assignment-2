@@ -365,7 +365,6 @@ def build_current_surrounding_pairs(indices: "list[int]", window_size: int = 2):
 def expand_surrounding_words(
     ix_surroundings: "list[list[int]]", ix_current: "list[int]"
 ):
-    flatten_list = lambda l: [x for y in l for x in y]
 
     ix_surroundings_expanded = flatten_list(ix_surroundings)
     ix_current = flatten_list([[x] * 2 for x in ix_current])

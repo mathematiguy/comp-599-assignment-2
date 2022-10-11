@@ -695,10 +695,23 @@ if __name__ == "__main__":
         loss = train_w2v(model_cb, optimizer, loader_cb, device=device).item()
         print(f"Loss at epoch #{epoch}: {loss:.4f}")
 
-    # # Training Skip-Gram
+    # Training Skip-Gram
+    print("Training Skip-Gram")
+    sources_sg, targets_sg = skipgram_preprocessing(text_indices, window_size=2)
 
-    # # TODO: your work here
-    # model_sg = "TODO: use SkipGram"
+    loader_sg = DataLoader(
+        Word2VecDataset(sources_sg, targets_sg),
+        batch_size=batch_size,
+        shuffle=True,
+        collate_fn=collate_cbow,
+    )
+
+    model_sg = SkipGram(num_words=len(word_to_index), embed_dim=200).to(device)
+    optimizer = torch.optim.Adam(model_sg.parameters())
+
+    for epoch in range(n_epochs):
+        loss = train_w2v(model_sg, optimizer, loader_sg, device=device).item()
+        print(f"Loss at epoch #{epoch}: {loss:.4f}")
 
     # # RETRIEVE SIMILAR WORDS
     # word = "man"

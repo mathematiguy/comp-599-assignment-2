@@ -553,7 +553,7 @@ def word_analogy(
 
     analogy_emb = word_a_emb - word_b_emb + word_c_emb
     analogy_top_k = compute_topk_similar(analogy_emb, w2v_emb_weight, k)
-    results = [index_to_word[idx] for idx in analogy_top_k.tolist()]
+    results = [index_to_word[idx] for idx in analogy_top_k]
 
     return results
 

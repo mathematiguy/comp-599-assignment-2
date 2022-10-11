@@ -396,8 +396,8 @@ class SharedNNLM:
         """
 
         # TODO vvvvvv
-        self.embedding = "your work here"
-        self.projection = "your work here"
+        self.embedding = nn.Embedding(num_words, embed_dim)
+        self.projection = nn.Linear(embed_dim, num_words, bias=False)
 
         # TODO ^^^^^
         self.bind_weights()

@@ -340,8 +340,16 @@ def p_value_permutation_test(
 
 
 def build_current_surrounding_pairs(indices: "list[int]", window_size: int = 2):
-    # TODO: your work here
-    pass
+
+    # Drop start + end tokens
+    current_indices = indices[window_size:-window_size]
+
+    surrounding_indices = [
+        indices[i-window_size:i] + indices[i+1:i+window_size+1]
+         for i, cur in enumerate(indices)
+    ][window_size:-window_size]
+
+    return surrounding_indices, current_indices
 
 
 def expand_surrounding_words(ix_surroundings: "list[list[int]]", ix_current: "list[int]"):

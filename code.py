@@ -612,152 +612,165 @@ if __name__ == "__main__":
 
     text_indices = tokens_to_ix(tokens, word_to_index)
 
-    # Train CBOW
-    sources_cb, targets_cb = cbow_preprocessing(text_indices, window_size=2)
-    loader_cb = DataLoader(
-        Word2VecDataset(sources_cb, targets_cb),
-        batch_size=batch_size,
-        shuffle=True,
-        collate_fn=collate_cbow,
-    )
+    # Test build_current_surrounding_pairs
+    text = "dogs and cats are playing".split()
+    surroundings, currents = build_current_surrounding_pairs(text, window_size=1)
+    print(f"text: {text}")
+    print(f"surroundings: {surroundings}")
+    print(f"currents: {currents}")
 
-    model_cb = CBOW(num_words=len(word_to_index), embed_dim=200).to(device)
-    optimizer = torch.optim.Adam(model_cb.parameters())
+    indices = [word_to_index[t] for t in text]
+    surroundings, currents = build_current_surrounding_pairs(indices, window_size=1)
+    print(f"indices: {indices}")
+    print(f"surroundings: {surroundings}")
+    print(f"currents: {currents}")
 
-    for epoch in range(n_epochs):
-        loss = train_w2v(model_cb, optimizer, loader_cb, device=device).item()
-        print(f"Loss at epoch #{epoch}: {loss:.4f}")
+    # # Train CBOW
+    # sources_cb, targets_cb = cbow_preprocessing(text_indices, window_size=2)
+    # loader_cb = DataLoader(
+    #     Word2VecDataset(sources_cb, targets_cb),
+    #     batch_size=batch_size,
+    #     shuffle=True,
+    #     collate_fn=collate_cbow,
+    # )
 
-    # Training Skip-Gram
+    # model_cb = CBOW(num_words=len(word_to_index), embed_dim=200).to(device)
+    # optimizer = torch.optim.Adam(model_cb.parameters())
 
-    # TODO: your work here
-    model_sg = "TODO: use SkipGram"
+    # for epoch in range(n_epochs):
+    #     loss = train_w2v(model_cb, optimizer, loader_cb, device=device).item()
+    #     print(f"Loss at epoch #{epoch}: {loss:.4f}")
 
-    # RETRIEVE SIMILAR WORDS
-    word = "man"
+    # # Training Skip-Gram
 
-    similar_words_cb = retrieve_similar_words(
-        model=model_cb,
-        word=word,
-        index_map=word_to_index,
-        index_to_word=index_to_word,
-        k=5,
-    )
+    # # TODO: your work here
+    # model_sg = "TODO: use SkipGram"
 
-    similar_words_sg = retrieve_similar_words(
-        model=model_sg,
-        word=word,
-        index_map=word_to_index,
-        index_to_word=index_to_word,
-        k=5,
-    )
+    # # RETRIEVE SIMILAR WORDS
+    # word = "man"
 
-    print(f"(CBOW) Words similar to '{word}' are: {similar_words_cb}")
-    print(f"(Skip-gram) Words similar to '{word}' are: {similar_words_sg}")
+    # similar_words_cb = retrieve_similar_words(
+    #     model=model_cb,
+    #     word=word,
+    #     index_map=word_to_index,
+    #     index_to_word=index_to_word,
+    #     k=5,
+    # )
 
-    # COMPUTE WORDS ANALOGIES
-    a = "man"
-    b = "woman"
-    c = "girl"
+    # similar_words_sg = retrieve_similar_words(
+    #     model=model_sg,
+    #     word=word,
+    #     index_map=word_to_index,
+    #     index_to_word=index_to_word,
+    #     k=5,
+    # )
 
-    analogies_cb = word_analogy(
-        model=model_cb,
-        word_a=a,
-        word_b=b,
-        word_c=c,
-        index_map=word_to_index,
-        index_to_word=index_to_word,
-    )
-    analogies_sg = word_analogy(
-        model=model_sg,
-        word_a=a,
-        word_b=b,
-        word_c=c,
-        index_map=word_to_index,
-        index_to_word=index_to_word,
-    )
+    # print(f"(CBOW) Words similar to '{word}' are: {similar_words_cb}")
+    # print(f"(Skip-gram) Words similar to '{word}' are: {similar_words_sg}")
 
-    print(f"CBOW's analogies for {a} - {b} + {c} are: {analogies_cb}")
-    print(f"Skip-gram's analogies for {a} - {b} + {c} are: {analogies_sg}")
+    # # COMPUTE WORDS ANALOGIES
+    # a = "man"
+    # b = "woman"
+    # c = "girl"
 
-    # ###################### PART 1: TEST CODE ######################
+    # analogies_cb = word_analogy(
+    #     model=model_cb,
+    #     word_a=a,
+    #     word_b=b,
+    #     word_c=c,
+    #     index_map=word_to_index,
+    #     index_to_word=index_to_word,
+    # )
+    # analogies_sg = word_analogy(
+    #     model=model_sg,
+    #     word_a=a,
+    #     word_b=b,
+    #     word_c=c,
+    #     index_map=word_to_index,
+    #     index_to_word=index_to_word,
+    # )
 
-    # Prefilled code showing you how to use the helper functions
-    word_to_embedding = load_glove_embeddings("data/glove/glove.6B.300d.txt")
+    # print(f"CBOW's analogies for {a} - {b} + {c} are: {analogies_cb}")
+    # print(f"Skip-gram's analogies for {a} - {b} + {c} are: {analogies_sg}")
 
-    professions = load_professions("data/professions.tsv")
+    # # ###################### PART 1: TEST CODE ######################
 
-    gender_attribute_words = load_gender_attribute_words(
-        "data/gender_attribute_words.json"
-    )
+    # # Prefilled code showing you how to use the helper functions
+    # word_to_embedding = load_glove_embeddings("data/glove/glove.6B.300d.txt")
 
-    # === Section 2.1 ===
-    gender_subspace = "your work here"
+    # professions = load_professions("data/professions.tsv")
 
-    # === Section 2.2 ===
-    a = "your work here"
-    b = "your work here"
-    scalar_projection, vector_projection = "your work here"
+    # gender_attribute_words = load_gender_attribute_words(
+    #     "data/gender_attribute_words.json"
+    # )
 
-    # === Section 2.3 ===
-    profession_to_embedding = "your work here"
+    # # === Section 2.1 ===
+    # gender_subspace = "your work here"
 
-    # === Section 2.4 ===
-    positive_profession_words = "your work here"
-    negative_profession_words = "your work here"
+    # # === Section 2.2 ===
+    # a = "your work here"
+    # b = "your work here"
+    # scalar_projection, vector_projection = "your work here"
 
-    print(f"Max profession words: {positive_profession_words}")
-    print(f"Min profession words: {negative_profession_words}")
+    # # === Section 2.3 ===
+    # profession_to_embedding = "your work here"
 
-    # === Section 2.5 ===
-    direct_bias_professions = "your work here"
+    # # === Section 2.4 ===
+    # positive_profession_words = "your work here"
+    # negative_profession_words = "your work here"
 
-    # === Section 2.6 ===
+    # print(f"Max profession words: {positive_profession_words}")
+    # print(f"Min profession words: {negative_profession_words}")
 
-    # Prepare attribute word sets for testing
-    A = ["male", "man", "boy", "brother", "he", "him", "his", "son"]
-    B = ["female", "woman", "girl", "sister", "she", "her", "hers", "daughter"]
+    # # === Section 2.5 ===
+    # direct_bias_professions = "your work here"
 
-    # Prepare target word sets for testing
-    X = ["doctor", "mechanic", "engineer"]
-    Y = ["nurse", "artist", "teacher"]
+    # # === Section 2.6 ===
 
-    word = "doctor"
-    weat_association = "your work here"
-    weat_differential_association = "your work here"
+    # # Prepare attribute word sets for testing
+    # A = ["male", "man", "boy", "brother", "he", "him", "his", "son"]
+    # B = ["female", "woman", "girl", "sister", "she", "her", "hers", "daughter"]
 
-    # === Section 3.1 ===
-    debiased_word_to_embedding = "your work here"
-    debiased_profession_to_embedding = "your work here"
+    # # Prepare target word sets for testing
+    # X = ["doctor", "mechanic", "engineer"]
+    # Y = ["nurse", "artist", "teacher"]
 
-    # === Section 3.2 ===
-    direct_bias_professions_debiased = "your work here"
+    # word = "doctor"
+    # weat_association = "your work here"
+    # weat_differential_association = "your work here"
 
-    print(f"DirectBias Professions (debiased): {direct_bias_professions_debiased:.2f}")
+    # # === Section 3.1 ===
+    # debiased_word_to_embedding = "your work here"
+    # debiased_profession_to_embedding = "your work here"
 
-    X = [
-        "math",
-        "algebra",
-        "geometry",
-        "calculus",
-        "equations",
-        "computation",
-        "numbers",
-        "addition",
-    ]
+    # # === Section 3.2 ===
+    # direct_bias_professions_debiased = "your work here"
 
-    Y = [
-        "poetry",
-        "art",
-        "dance",
-        "literature",
-        "novel",
-        "symphony",
-        "drama",
-        "sculpture",
-    ]
+    # print(f"DirectBias Professions (debiased): {direct_bias_professions_debiased:.2f}")
 
-    # Also run this test for debiased profession representations.
-    p_value = "your work here"
+    # X = [
+    #     "math",
+    #     "algebra",
+    #     "geometry",
+    #     "calculus",
+    #     "equations",
+    #     "computation",
+    #     "numbers",
+    #     "addition",
+    # ]
 
-    print(f"p-value: {p_value:.2f}")
+    # Y = [
+    #     "poetry",
+    #     "art",
+    #     "dance",
+    #     "literature",
+    #     "novel",
+    #     "symphony",
+    #     "drama",
+    #     "sculpture",
+    # ]
+
+    # # Also run this test for debiased profession representations.
+    # p_value = "your work here"
+
+    # print(f"p-value: {p_value:.2f}")

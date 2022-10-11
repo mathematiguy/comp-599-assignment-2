@@ -516,8 +516,16 @@ def retrieve_similar_words(
     index_to_word: "dict[int, str]",
     k: int = 5,
 ) -> "list[str]":
-    # TODO: your work here
-    pass
+
+    word_index = index_map[word]
+    w2v_emb_weight = model_sg.emb.weight
+    word_emb = w2v_emb_weight[word_index, :]
+
+    top_k = compute_topk_similar(word_emb, w2v_emb_weight, k)
+    results = [index_to_word[idx] for idx in top_k.tolist()]
+
+    return results
+
 
 
 @torch.no_grad()

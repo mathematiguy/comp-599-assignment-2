@@ -579,8 +579,7 @@ if __name__ == "__main__":
     num_words = 50000
 
     # Load the data
-    data_path = "../input/a1-data"  # Use this for kaggle
-    # data_path = "data"  # Use this if running locally
+    data_path = "data"  # Use this if running locally
 
     # If you use GPUs, use the code below:
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")

@@ -493,8 +493,19 @@ class CBOW(nn.Module):
 def compute_topk_similar(
     word_emb: torch.Tensor, w2v_emb_weight: torch.Tensor, k
 ) -> list:
-    # TODO: your work here
-    pass
+
+    # Normalize word embedding + embedding tensor
+    word_emb_normalized = F.normalize(word_emb, dim=0)
+    w2v_emb_weight_normalized = F.normalize(w2v_emb_weight, dim=1)
+
+    # Calculate similarity matrix
+    similarity = torch.matmul(w2v_emb_weight_normalized, word_emb_normalized)
+
+    # Get top k most similar
+    top_k = torch.topk(similarity, k+1)
+
+    # Skip the first entry, which will be the original vector
+    return top_k.indices[1:]
 
 
 @torch.no_grad()
@@ -713,16 +724,13 @@ if __name__ == "__main__":
         loss = train_w2v(model_sg, optimizer, loader_sg, device=device).item()
         print(f"Loss at epoch #{epoch}: {loss:.4f}")
 
-    # # RETRIEVE SIMILAR WORDS
-    # word = "man"
+    # Test compute_topk_similar
+    word_emb = model_sg.emb.weight[0,:]
+    w2v_emb_weight = model_sg.emb.weight
+    k = 5
 
-    # similar_words_cb = retrieve_similar_words(
-    #     model=model_cb,
-    #     word=word,
-    #     index_map=word_to_index,
-    #     index_to_word=index_to_word,
-    #     k=5,
-    # )
+    compute_topk_similar(word_emb, w2v_emb_weight, k)
+
 
     # similar_words_sg = retrieve_similar_words(
     #     model=model_sg,

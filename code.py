@@ -386,7 +386,17 @@ def cbow_preprocessing(indices_list: "list[list[int]]", window_size: int = 2):
 
 def skipgram_preprocessing(indices_list: "list[list[int]]", window_size: int = 2):
     # TODO: your work here
-    pass
+
+    sources = []
+    targets = []
+    for indices in indices_list:
+        surrounding, current = build_current_surrounding_pairs(indices, window_size)
+        for sur, cur in zip(surrounding, current):
+            for s in sur:
+                sources.append(s)
+                targets.append(cur)
+
+    return sources, targets
 
 
 class SharedNNLM:

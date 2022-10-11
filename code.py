@@ -497,7 +497,7 @@ def compute_topk_similar(
 ) -> list:
 
     # Normalize word embedding + embedding tensor
-    word_emb_normalized = F.normalize(word_emb, dim=0)
+    word_emb_normalized = F.normalize(word_emb.flatten(), dim=0)
     w2v_emb_weight_normalized = F.normalize(w2v_emb_weight, dim=1)
 
     # Calculate similarity matrix

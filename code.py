@@ -672,9 +672,9 @@ if __name__ == "__main__":
     model_cb = CBOW(num_words=len(word_to_index), embed_dim=200).to(device)
     optimizer = torch.optim.Adam(model_cb.parameters())
 
-    # for epoch in range(n_epochs):
-    #     loss = train_w2v(model_cb, optimizer, loader_cb, device=device).item()
-    #     print(f"Loss at epoch #{epoch}: {loss:.4f}")
+    for epoch in range(n_epochs):
+        loss = train_w2v(model_cb, optimizer, loader_cb, device=device).item()
+        print(f"Loss at epoch #{epoch}: {loss:.4f}")
 
     # # Training Skip-Gram
 

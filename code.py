@@ -345,21 +345,34 @@ def build_current_surrounding_pairs(indices: "list[int]", window_size: int = 2):
     current_indices = indices[window_size:-window_size]
 
     surrounding_indices = [
-        indices[i-window_size:i] + indices[i+1:i+window_size+1]
-         for i, cur in enumerate(indices)
+        indices[i - window_size : i] + indices[i + 1 : i + window_size + 1]
+        for i, cur in enumerate(indices)
     ][window_size:-window_size]
 
     return surrounding_indices, current_indices
 
 
-def expand_surrounding_words(ix_surroundings: "list[list[int]]", ix_current: "list[int]"):
-    # TODO: your work here
-    pass
+def expand_surrounding_words(
+    ix_surroundings: "list[list[int]]", ix_current: "list[int]"
+):
+    flatten_list = lambda l: [x for y in l for x in y]
+
+    ix_surroundings_expanded = flatten_list(ix_surroundings)
+    ix_current = flatten_list([[x] * 2 for x in ix_current])
+
+    return ix_surroundings_expanded, ix_current
 
 
 def cbow_preprocessing(indices_list: "list[list[int]]", window_size: int = 2):
-    # TODO: your work here
-    pass
+
+    sources = []
+    targets = []
+    for indices in indices_list:
+        surrounding, current = build_current_surrounding_pairs(indices, window_size)
+        sources += surrounding
+        targets += current
+
+    return sources, targets
 
 
 def skipgram_preprocessing(indices_list: "list[list[int]]", window_size: int = 2):

@@ -366,10 +366,11 @@ def expand_surrounding_words(
     ix_surroundings: "list[list[int]]", ix_current: "list[int]"
 ):
 
+    window_size = len(ix_surroundings[0])
     ix_surroundings_expanded = flatten_list(ix_surroundings)
-    ix_current = flatten_list([[x] * 2 for x in ix_current])
+    ix_current_expanded = flatten_list([[x] * window_size for x in ix_current])
 
-    return ix_surroundings_expanded, ix_current
+    return ix_surroundings_expanded, ix_current_expanded
 
 
 def cbow_preprocessing(indices_list: "list[list[int]]", window_size: int = 2):

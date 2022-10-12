@@ -639,8 +639,11 @@ def compute_direct_bias(
     gender_subspace: np.array,
     c: float = 0.25,
 ):
-    # TODO: your work here
-    pass
+    embeddings = compute_profession_embeddings(word_to_embedding, words)
+    similaritys = []
+    for word, embedding in embeddings.items():
+        similaritys.append(cosine_similarity(embedding, gender_subspace))
+    return np.mean([abs(sim) ** c for sim in similaritys])
 
 
 def weat_association(

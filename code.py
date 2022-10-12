@@ -667,15 +667,21 @@ def weat_differential_association(
     word_to_embedding: "dict[str, np.array]",
     weat_association_func: Callable,
 ) -> float:
-    # TODO: your work here
-    pass
+
+    sx_AB = [weat_association(x, A, B, word_to_embedding) for x in X]
+    sy_AB = [weat_association(y, A, B, word_to_embedding) for y in Y]
+
+    return np.sum(sx_AB) - np.sum(sy_AB)
 
 
 def debias_word_embedding(
     word: str, word_to_embedding: "dict[str, np.array]", gender_subspace: np.array
 ) -> np.array:
-    # TODO: your work here
-    pass
+
+    word_embed = word_to_embedding[word]
+    gender_scalar, gender_vector = project(word_embed, gender_subspace)
+    debiased = word_embed - gender_vector
+    return debiased
 
 
 def hard_debias(

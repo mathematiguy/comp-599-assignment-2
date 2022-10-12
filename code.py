@@ -602,8 +602,11 @@ def compute_profession_embeddings(
     profession_embeddings = {}
     for profession in professions:
         embeddings = []
-        for word in profession.split():
-            embeddings.append(word_to_embedding[word])
+        try:
+            embeddings.append(word_to_embedding[profession])
+        except KeyError:
+            for word in profession.split():
+                embeddings.append(word_to_embedding[word])
         profession_embeddings[profession] = np.mean(embeddings, axis=0)
 
     return profession_embeddings

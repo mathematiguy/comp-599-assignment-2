@@ -16,7 +16,6 @@ from tqdm.auto import tqdm
 flatten_list = lambda l: [x for y in l for x in y]
 
 
-
 # ########################## PART 1: PROVIDED CODE ##############################
 def load_datasets(data_directory: str) -> "Union[dict, dict]":
     """
@@ -343,14 +342,14 @@ def p_value_permutation_test(
 
 
 def build_current_surrounding_pairs(indices: "list[int]", window_size: int = 2):
-    '''
+    """
     Given a list of indices, this produces the following:
         - surrounding_indices: a list of context windows for each index
         - current_indices: the centre of each context window
 
     Each context window has constant width of 2 * window_size.
     Windows at the beginning or end are dropped to ensure this is the case.
-    '''
+    """
     # Drop start + end tokens
     current_indices = indices[window_size:-window_size]
 
@@ -394,7 +393,9 @@ def skipgram_preprocessing(indices_list: "list[list[int]]", window_size: int = 2
     targets = []
     for indices in indices_list:
         surrounding, current = build_current_surrounding_pairs(indices, window_size)
-        surroundings_expanded, current_expanded = expand_surrounding_words(surrounding, current)
+        surroundings_expanded, current_expanded = expand_surrounding_words(
+            surrounding, current
+        )
         sources += surroundings_expanded
         targets += current_expanded
 
@@ -504,7 +505,7 @@ def compute_topk_similar(
     similarity = torch.matmul(w2v_emb_weight_normalized, word_emb_normalized)
 
     # Get top k most similar
-    top_k = torch.topk(similarity, k+1)
+    top_k = torch.topk(similarity, k + 1)
 
     # Skip the first entry, which will be the original vector
     return top_k.indices[1:].tolist()
@@ -527,7 +528,6 @@ def retrieve_similar_words(
     results = [index_to_word[idx] for idx in top_k]
 
     return results
-
 
 
 @torch.no_grad()
@@ -582,7 +582,7 @@ def compute_gender_subspace(
         gender_attribute_embeddings.append(female_embedding)
 
     # Run PCA
-    pca = PCA(n_components = n_components)
+    pca = PCA(n_components=n_components)
     pca.fit(gender_attribute_embeddings)
 
     # Return the gender_subspace

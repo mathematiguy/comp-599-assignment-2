@@ -759,7 +759,7 @@ if __name__ == "__main__":
     w2v_emb_weight = model_sg.emb.weight
     k = 5
 
-    compute_topk_similar(word_emb, w2v_emb_weight, k)
+    top_k = compute_topk_similar(word_emb, w2v_emb_weight, k)
 
     # RETRIEVE SIMILAR WORDS
     word = "man"

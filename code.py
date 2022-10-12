@@ -628,8 +628,9 @@ def compute_extreme_words(
 
 
 def cosine_similarity(a: np.array, b: np.array) -> float:
-    # TODO: your work here
-    pass
+    norm_a = np.linalg.norm(a)
+    norm_b = np.linalg.norm(b)
+    return np.dot(a, b) / (norm_a * norm_b)
 
 
 def compute_direct_bias(

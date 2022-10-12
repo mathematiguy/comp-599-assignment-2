@@ -653,164 +653,164 @@ if __name__ == "__main__":
     # n_epochs = 2
     # num_words = 50000
 
-    sample_size = 100  # Change this if you want to take a subset of data for testing
-    batch_size = 64
-    n_epochs = 1
-    num_words = 50000
+    # sample_size = 100  # Change this if you want to take a subset of data for testing
+    # batch_size = 64
+    # n_epochs = 1
+    # num_words = 50000
 
-    # Load the data
-    data_path = "data"  # Use this if running locally
+    # # Load the data
+    # data_path = "data"  # Use this if running locally
 
-    # If you use GPUs, use the code below:
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-    # ###################### PART 1: TEST CODE ######################
-    print("=" * 80)
-    print("Running test code for part 1")
-    print("-" * 80)
-
-    # Prefilled code showing you how to use the helper functions
-    train_raw, valid_raw = load_datasets(data_path)
-    if sample_size is not None:
-        for key in ["premise", "hypothesis", "label"]:
-            train_raw[key] = train_raw[key][:sample_size]
-            valid_raw[key] = valid_raw[key][:sample_size]
-
-    full_text = (
-        train_raw["premise"]
-        + train_raw["hypothesis"]
-        + valid_raw["premise"]
-        + valid_raw["hypothesis"]
-    )
-
-    # Process into indices
-    tokens = tokenize_w2v(full_text)
-
-    word_counts = build_word_counts(tokens)
-    word_to_index = build_index_map(word_counts, max_words=num_words)
-    index_to_word = {v: k for k, v in word_to_index.items()}
-
-    text_indices = tokens_to_ix(tokens, word_to_index)
-
-    # Test build_current_surrounding_pairs
-    text = "dogs and cats are playing".split()
-    surroundings, currents = build_current_surrounding_pairs(text, window_size=1)
-    print(f"text: {text}")
-    print(f"surroundings: {surroundings}")
-    print(f"currents: {currents}")
-
-    surrounding_expanded, current_expanded = expand_surrounding_words(
-        surroundings, currents
-    )
-    print(f"surrounding_expanded: {surrounding_expanded}")
-    print(f"current_expanded: {current_expanded}\n")
-
-    indices = [word_to_index[t] for t in text]
-    surroundings, currents = build_current_surrounding_pairs(indices, window_size=1)
-    print(f"indices: {indices}")
-    print(f"surroundings: {surroundings}")
-    print(f"currents: {currents}")
-
-    surrounding_expanded, current_expanded = expand_surrounding_words(
-        surroundings, currents
-    )
-    print(f"surrounding_expanded: {surrounding_expanded}")
-    print(f"current_expanded: {current_expanded}")
-
-    # Training CBOW
-    print("Training CBOW...")
-    sources_cb, targets_cb = cbow_preprocessing(text_indices, window_size=2)
-
-    loader_cb = DataLoader(
-        Word2VecDataset(sources_cb, targets_cb),
-        batch_size=batch_size,
-        shuffle=True,
-        collate_fn=collate_cbow,
-    )
-
-    model_cb = CBOW(num_words=len(word_to_index), embed_dim=200).to(device)
-    optimizer = torch.optim.Adam(model_cb.parameters())
-
-    for epoch in range(n_epochs):
-        loss = train_w2v(model_cb, optimizer, loader_cb, device=device).item()
-        print(f"Loss at epoch #{epoch}: {loss:.4f}")
-
-    # Training Skip-Gram
-    print("Training Skip-Gram")
-    sources_sg, targets_sg = skipgram_preprocessing(text_indices, window_size=2)
-
-    loader_sg = DataLoader(
-        Word2VecDataset(sources_sg, targets_sg),
-        batch_size=batch_size,
-        shuffle=True,
-        collate_fn=collate_cbow,
-    )
-
-    model_sg = SkipGram(num_words=len(word_to_index), embed_dim=200).to(device)
-    optimizer = torch.optim.Adam(model_sg.parameters())
-
-    for epoch in range(n_epochs):
-        loss = train_w2v(model_sg, optimizer, loader_sg, device=device).item()
-        print(f"Loss at epoch #{epoch}: {loss:.4f}")
-
-    # Test compute_topk_similar
-    word_emb = model_sg.emb.weight[0,:]
-    w2v_emb_weight = model_sg.emb.weight
-    k = 5
-
-    top_k = compute_topk_similar(word_emb, w2v_emb_weight, k)
-
-    # RETRIEVE SIMILAR WORDS
-    word = "man"
-
-    similar_words_cb = retrieve_similar_words(
-        model=model_cb,
-        word=word,
-        index_map=word_to_index,
-        index_to_word=index_to_word,
-        k=5,
-    )
-
-    similar_words_sg = retrieve_similar_words(
-        model=model_sg,
-        word=word,
-        index_map=word_to_index,
-        index_to_word=index_to_word,
-        k=5,
-    )
-
-    print(f"(CBOW) Words similar to '{word}' are: {similar_words_cb}")
-    print(f"(Skip-gram) Words similar to '{word}' are: {similar_words_sg}")
-
-    # COMPUTE WORDS ANALOGIES
-    a = "man"
-    b = "woman"
-    c = "girl"
-
-    analogies_cb = word_analogy(
-        model=model_cb,
-        word_a=a,
-        word_b=b,
-        word_c=c,
-        index_map=word_to_index,
-        index_to_word=index_to_word,
-    )
-    analogies_sg = word_analogy(
-        model=model_sg,
-        word_a=a,
-        word_b=b,
-        word_c=c,
-        index_map=word_to_index,
-        index_to_word=index_to_word,
-    )
-
-    print(f"CBOW's analogies for {a} - {b} + {c} are: {analogies_cb}")
-    print(f"Skip-gram's analogies for {a} - {b} + {c} are: {analogies_sg}")
+    # # If you use GPUs, use the code below:
+    # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     # # ###################### PART 1: TEST CODE ######################
+    # print("=" * 80)
+    # print("Running test code for part 1")
+    # print("-" * 80)
 
     # # Prefilled code showing you how to use the helper functions
-    # word_to_embedding = load_glove_embeddings("data/glove/glove.6B.300d.txt")
+    # train_raw, valid_raw = load_datasets(data_path)
+    # if sample_size is not None:
+    #     for key in ["premise", "hypothesis", "label"]:
+    #         train_raw[key] = train_raw[key][:sample_size]
+    #         valid_raw[key] = valid_raw[key][:sample_size]
+
+    # full_text = (
+    #     train_raw["premise"]
+    #     + train_raw["hypothesis"]
+    #     + valid_raw["premise"]
+    #     + valid_raw["hypothesis"]
+    # )
+
+    # # Process into indices
+    # tokens = tokenize_w2v(full_text)
+
+    # word_counts = build_word_counts(tokens)
+    # word_to_index = build_index_map(word_counts, max_words=num_words)
+    # index_to_word = {v: k for k, v in word_to_index.items()}
+
+    # text_indices = tokens_to_ix(tokens, word_to_index)
+
+    # # Test build_current_surrounding_pairs
+    # text = "dogs and cats are playing".split()
+    # surroundings, currents = build_current_surrounding_pairs(text, window_size=1)
+    # print(f"text: {text}")
+    # print(f"surroundings: {surroundings}")
+    # print(f"currents: {currents}")
+
+    # surrounding_expanded, current_expanded = expand_surrounding_words(
+    #     surroundings, currents
+    # )
+    # print(f"surrounding_expanded: {surrounding_expanded}")
+    # print(f"current_expanded: {current_expanded}\n")
+
+    # indices = [word_to_index[t] for t in text]
+    # surroundings, currents = build_current_surrounding_pairs(indices, window_size=1)
+    # print(f"indices: {indices}")
+    # print(f"surroundings: {surroundings}")
+    # print(f"currents: {currents}")
+
+    # surrounding_expanded, current_expanded = expand_surrounding_words(
+    #     surroundings, currents
+    # )
+    # print(f"surrounding_expanded: {surrounding_expanded}")
+    # print(f"current_expanded: {current_expanded}")
+
+    # # Training CBOW
+    # print("Training CBOW...")
+    # sources_cb, targets_cb = cbow_preprocessing(text_indices, window_size=2)
+
+    # loader_cb = DataLoader(
+    #     Word2VecDataset(sources_cb, targets_cb),
+    #     batch_size=batch_size,
+    #     shuffle=True,
+    #     collate_fn=collate_cbow,
+    # )
+
+    # model_cb = CBOW(num_words=len(word_to_index), embed_dim=200).to(device)
+    # optimizer = torch.optim.Adam(model_cb.parameters())
+
+    # for epoch in range(n_epochs):
+    #     loss = train_w2v(model_cb, optimizer, loader_cb, device=device).item()
+    #     print(f"Loss at epoch #{epoch}: {loss:.4f}")
+
+    # # Training Skip-Gram
+    # print("Training Skip-Gram")
+    # sources_sg, targets_sg = skipgram_preprocessing(text_indices, window_size=2)
+
+    # loader_sg = DataLoader(
+    #     Word2VecDataset(sources_sg, targets_sg),
+    #     batch_size=batch_size,
+    #     shuffle=True,
+    #     collate_fn=collate_cbow,
+    # )
+
+    # model_sg = SkipGram(num_words=len(word_to_index), embed_dim=200).to(device)
+    # optimizer = torch.optim.Adam(model_sg.parameters())
+
+    # for epoch in range(n_epochs):
+    #     loss = train_w2v(model_sg, optimizer, loader_sg, device=device).item()
+    #     print(f"Loss at epoch #{epoch}: {loss:.4f}")
+
+    # # Test compute_topk_similar
+    # word_emb = model_sg.emb.weight[0,:]
+    # w2v_emb_weight = model_sg.emb.weight
+    # k = 5
+
+    # top_k = compute_topk_similar(word_emb, w2v_emb_weight, k)
+
+    # # RETRIEVE SIMILAR WORDS
+    # word = "man"
+
+    # similar_words_cb = retrieve_similar_words(
+    #     model=model_cb,
+    #     word=word,
+    #     index_map=word_to_index,
+    #     index_to_word=index_to_word,
+    #     k=5,
+    # )
+
+    # similar_words_sg = retrieve_similar_words(
+    #     model=model_sg,
+    #     word=word,
+    #     index_map=word_to_index,
+    #     index_to_word=index_to_word,
+    #     k=5,
+    # )
+
+    # print(f"(CBOW) Words similar to '{word}' are: {similar_words_cb}")
+    # print(f"(Skip-gram) Words similar to '{word}' are: {similar_words_sg}")
+
+    # # COMPUTE WORDS ANALOGIES
+    # a = "man"
+    # b = "woman"
+    # c = "girl"
+
+    # analogies_cb = word_analogy(
+    #     model=model_cb,
+    #     word_a=a,
+    #     word_b=b,
+    #     word_c=c,
+    #     index_map=word_to_index,
+    #     index_to_word=index_to_word,
+    # )
+    # analogies_sg = word_analogy(
+    #     model=model_sg,
+    #     word_a=a,
+    #     word_b=b,
+    #     word_c=c,
+    #     index_map=word_to_index,
+    #     index_to_word=index_to_word,
+    # )
+
+    # print(f"CBOW's analogies for {a} - {b} + {c} are: {analogies_cb}")
+    # print(f"Skip-gram's analogies for {a} - {b} + {c} are: {analogies_sg}")
+
+    # ###################### PART 1: TEST CODE ######################
+
+    # Prefilled code showing you how to use the helper functions
+    word_to_embedding = load_glove_embeddings("data/glove/glove.6B.300d.txt")
 
     # professions = load_professions("data/professions.tsv")
 

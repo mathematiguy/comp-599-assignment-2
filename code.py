@@ -616,8 +616,15 @@ def compute_extreme_words(
     k: int = 10,
     max_: bool = True,
 ) -> "list[str]":
-    # TODO: your work here
-    pass
+    word_embeddings = compute_profession_embeddings(word_to_embedding, words)
+    projection_scalars = {
+        word: project(embedding, gender_subspace)[0]
+        for word, embedding in word_embeddings.items()
+    }
+    ordered_words = sorted(
+        projection_scalars.items(), key=lambda x: x[1] if max_ else -x[1]
+    )
+    return [word for word, score in ordered_words[:k]]
 
 
 def cosine_similarity(a: np.array, b: np.array) -> float:

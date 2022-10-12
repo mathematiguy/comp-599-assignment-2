@@ -619,6 +619,7 @@ def compute_extreme_words(
     k: int = 10,
     max_: bool = True,
 ) -> "list[str]":
+    gender_subspace = gender_subspace.flatten()
     word_embeddings = compute_profession_embeddings(word_to_embedding, words)
     projection_scalars = {
         word: project(embedding, gender_subspace)[0]
@@ -642,11 +643,12 @@ def compute_direct_bias(
     gender_subspace: np.array,
     c: float = 0.25,
 ):
+    gender_subspace = gender_subspace.flatten()
     embeddings = compute_profession_embeddings(word_to_embedding, words)
-    similaritys = []
+    similarity_scores = []
     for word, embedding in embeddings.items():
-        similaritys.append(cosine_similarity(embedding, gender_subspace))
-    return np.mean([abs(sim) ** c for sim in similaritys])
+        similarity_scores.append(cosine_similarity(embedding, gender_subspace))
+    return np.mean([abs(sim) ** c for sim in similarity_scores])
 
 
 def weat_association(

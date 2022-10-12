@@ -622,7 +622,7 @@ def compute_extreme_words(
         for word, embedding in word_embeddings.items()
     }
     ordered_words = sorted(
-        projection_scalars.items(), key=lambda x: x[1] if max_ else -x[1]
+        projection_scalars.items(), key=lambda x: -x[1] if max_ else x[1]
     )
     return [word for word, score in ordered_words[:k]]
 

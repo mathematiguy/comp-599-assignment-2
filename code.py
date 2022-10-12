@@ -689,8 +689,10 @@ def hard_debias(
     gender_attribute_words: "list[str]",
     n_components: int = 1,
 ) -> "dict[str, np.array]":
-    # TODO: your work here
-    pass
+
+    gender_subspace = compute_gender_subspace(word_to_embedding, gender_attribute_words, n_components).flatten()
+
+    return {word: debias_word_embedding(word, word_to_embedding, gender_subspace) for word, embed in word_to_embedding.items()}
 
 
 if __name__ == "__main__":

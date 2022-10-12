@@ -648,16 +648,15 @@ if __name__ == "__main__":
     torch.manual_seed(2022)
 
     # Parameters (you can change them)
-    sample_size = 2500  # Change this if you want to take a subset of data for testing
-    batch_size = 64
-    n_epochs = 2
-    num_words = 50000
-
-    # sample_size = 100  # Change this if you want to take a subset of data for testing
+    # sample_size = 2500  # Change this if you want to take a subset of data for testing
     # batch_size = 64
-    # n_epochs = 1
+    # n_epochs = 2
     # num_words = 50000
 
+    sample_size = 100  # Change this if you want to take a subset of data for testing
+    batch_size = 64
+    n_epochs = 1
+    num_words = 50000
 
     # Load the data
     data_path = "data"  # Use this if running locally

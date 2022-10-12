@@ -621,7 +621,7 @@ def compute_extreme_words(
 ) -> "list[str]":
     word_embeddings = compute_profession_embeddings(word_to_embedding, words)
     projection_scalars = {
-        word: abs(project(embedding, gender_subspace)[0])
+        word: project(embedding, gender_subspace)[0]
         for word, embedding in word_embeddings.items()
     }
     ordered_words = sorted(

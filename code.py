@@ -566,8 +566,27 @@ def compute_gender_subspace(
     gender_attribute_words: "list[tuple[str, str]]",
     n_components: int = 1,
 ) -> np.array:
-    # TODO: your work here
-    pass
+
+    gender_attribute_embeddings = []
+    for male_word, female_word in gender_attribute_words:
+
+        male_embedding = word_to_embedding[male_word]
+        female_embedding = word_to_embedding[female_word]
+
+        mean_embedding = (male_embedding + female_embedding) / 2
+
+        male_embedding = male_embedding - mean_embedding
+        female_embedding = female_embedding - mean_embedding
+
+        gender_attribute_embeddings.append(male_embedding)
+        gender_attribute_embeddings.append(female_embedding)
+
+    # Run PCA
+    pca = PCA(n_components = n_components)
+    pca.fit(gender_attribute_embeddings)
+
+    # Return the gender_subspace
+    return pca.components_
 
 
 def project(a: np.array, b: np.array) -> "tuple[float, np.array]":

@@ -678,6 +678,7 @@ def debias_word_embedding(
     word: str, word_to_embedding: "dict[str, np.array]", gender_subspace: np.array
 ) -> np.array:
 
+    gender_subspace = gender_subspace.flatten()
     word_embed = word_to_embedding[word]
     gender_scalar, gender_vector = project(word_embed, gender_subspace)
     debiased = word_embed - gender_vector

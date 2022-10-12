@@ -34,9 +34,3 @@ RUN update-alternatives --install /usr/local/bin/pip3 pip3 /usr/local/bin/pip${P
 RUN pip3 install --upgrade pip
 COPY requirements.txt /root/requirements.txt
 RUN pip3 install -r /root/requirements.txt
-
-# Install local package
-COPY pkg /code/pkg
-COPY setup.py /code
-RUN python${PYTHON_VERSION} -m pip install -e /code
-ENV PYTHONPATH="/code:${PYTHONPATH}"

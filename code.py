@@ -649,8 +649,14 @@ def compute_direct_bias(
 def weat_association(
     w: str, A: "list[str]", B: "list[str]", word_to_embedding: "dict[str, np.array]"
 ) -> float:
-    # TODO: your work here
-    pass
+    w_embedding = word_to_embedding[w]
+    A_embeddings = [word_to_embedding[a] for a in A]
+    B_embeddings = [word_to_embedding[b] for b in B]
+
+    cos_A_w = [cosine_similarity(w_embedding, a_embed) for a_embed in A_embeddings]
+    cos_B_w = [cosine_similarity(w_embedding, b_embed) for b_embed in B_embeddings]
+
+    return np.mean(cos_A_w) - np.mean(cos_B_w)
 
 
 def weat_differential_association(

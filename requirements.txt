@@ -6,3 +6,5 @@ torch==1.10.*
 scikit-learn==1.1.*
 tqdm==4.62.*
 numpy
+pandas
+matplotlib

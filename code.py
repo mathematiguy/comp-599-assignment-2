@@ -4,7 +4,6 @@ import itertools
 import random
 from typing import Union, Callable
 
-import pdb
 import numpy as np
 from sklearn.decomposition import PCA
 import torch
@@ -12,8 +11,6 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.utils.data import DataLoader
 from tqdm.auto import tqdm
-
-flatten_list = lambda l: [x for y in l for x in y]
 
 
 # ########################## PART 1: PROVIDED CODE ##############################
@@ -370,6 +367,8 @@ def expand_surrounding_words(
     else:
         window_size = len(ix_surroundings[0])
 
+    flatten_list = lambda l: [x for y in l for x in y]
+
     ix_surroundings_expanded = flatten_list(ix_surroundings)
     ix_current_expanded = flatten_list([[x] * window_size for x in ix_current])
 
@@ -696,9 +695,14 @@ def hard_debias(
     n_components: int = 1,
 ) -> "dict[str, np.array]":
 
-    gender_subspace = compute_gender_subspace(word_to_embedding, gender_attribute_words, n_components).flatten()
+    gender_subspace = compute_gender_subspace(
+        word_to_embedding, gender_attribute_words, n_components
+    ).flatten()
 
-    return {word: debias_word_embedding(word, word_to_embedding, gender_subspace) for word, embed in word_to_embedding.items()}
+    return {
+        word: debias_word_embedding(word, word_to_embedding, gender_subspace)
+        for word, embed in word_to_embedding.items()
+    }
 
 
 if __name__ == "__main__":
@@ -706,243 +710,268 @@ if __name__ == "__main__":
     torch.manual_seed(2022)
 
     # Parameters (you can change them)
-    # sample_size = 2500  # Change this if you want to take a subset of data for testing
-    # batch_size = 64
-    # n_epochs = 2
-    # num_words = 50000
+    sample_size = 2500  # Change this if you want to take a subset of data for testing
+    batch_size = 64
+    n_epochs = 2
+    num_words = 50000
 
-    # sample_size = 100  # Change this if you want to take a subset of data for testing
-    # batch_size = 64
-    # n_epochs = 1
-    # num_words = 50000
+    # Load the data
+    data_path = "data"  # Use this if running locally
 
-    # # Load the data
-    # data_path = "data"  # Use this if running locally
-
-    # # If you use GPUs, use the code below:
-    # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-    # # ###################### PART 1: TEST CODE ######################
-    # print("=" * 80)
-    # print("Running test code for part 1")
-    # print("-" * 80)
-
-    # # Prefilled code showing you how to use the helper functions
-    # train_raw, valid_raw = load_datasets(data_path)
-    # if sample_size is not None:
-    #     for key in ["premise", "hypothesis", "label"]:
-    #         train_raw[key] = train_raw[key][:sample_size]
-    #         valid_raw[key] = valid_raw[key][:sample_size]
-
-    # full_text = (
-    #     train_raw["premise"]
-    #     + train_raw["hypothesis"]
-    #     + valid_raw["premise"]
-    #     + valid_raw["hypothesis"]
-    # )
-
-    # # Process into indices
-    # tokens = tokenize_w2v(full_text)
-
-    # word_counts = build_word_counts(tokens)
-    # word_to_index = build_index_map(word_counts, max_words=num_words)
-    # index_to_word = {v: k for k, v in word_to_index.items()}
-
-    # text_indices = tokens_to_ix(tokens, word_to_index)
-
-    # # Test build_current_surrounding_pairs
-    # text = "dogs and cats are playing".split()
-    # surroundings, currents = build_current_surrounding_pairs(text, window_size=1)
-    # print(f"text: {text}")
-    # print(f"surroundings: {surroundings}")
-    # print(f"currents: {currents}")
-
-    # surrounding_expanded, current_expanded = expand_surrounding_words(
-    #     surroundings, currents
-    # )
-    # print(f"surrounding_expanded: {surrounding_expanded}")
-    # print(f"current_expanded: {current_expanded}\n")
-
-    # indices = [word_to_index[t] for t in text]
-    # surroundings, currents = build_current_surrounding_pairs(indices, window_size=1)
-    # print(f"indices: {indices}")
-    # print(f"surroundings: {surroundings}")
-    # print(f"currents: {currents}")
-
-    # surrounding_expanded, current_expanded = expand_surrounding_words(
-    #     surroundings, currents
-    # )
-    # print(f"surrounding_expanded: {surrounding_expanded}")
-    # print(f"current_expanded: {current_expanded}")
-
-    # # Training CBOW
-    # print("Training CBOW...")
-    # sources_cb, targets_cb = cbow_preprocessing(text_indices, window_size=2)
-
-    # loader_cb = DataLoader(
-    #     Word2VecDataset(sources_cb, targets_cb),
-    #     batch_size=batch_size,
-    #     shuffle=True,
-    #     collate_fn=collate_cbow,
-    # )
-
-    # model_cb = CBOW(num_words=len(word_to_index), embed_dim=200).to(device)
-    # optimizer = torch.optim.Adam(model_cb.parameters())
-
-    # for epoch in range(n_epochs):
-    #     loss = train_w2v(model_cb, optimizer, loader_cb, device=device).item()
-    #     print(f"Loss at epoch #{epoch}: {loss:.4f}")
-
-    # # Training Skip-Gram
-    # print("Training Skip-Gram")
-    # sources_sg, targets_sg = skipgram_preprocessing(text_indices, window_size=2)
-
-    # loader_sg = DataLoader(
-    #     Word2VecDataset(sources_sg, targets_sg),
-    #     batch_size=batch_size,
-    #     shuffle=True,
-    #     collate_fn=collate_cbow,
-    # )
-
-    # model_sg = SkipGram(num_words=len(word_to_index), embed_dim=200).to(device)
-    # optimizer = torch.optim.Adam(model_sg.parameters())
-
-    # for epoch in range(n_epochs):
-    #     loss = train_w2v(model_sg, optimizer, loader_sg, device=device).item()
-    #     print(f"Loss at epoch #{epoch}: {loss:.4f}")
-
-    # # Test compute_topk_similar
-    # word_emb = model_sg.emb.weight[0,:]
-    # w2v_emb_weight = model_sg.emb.weight
-    # k = 5
-
-    # top_k = compute_topk_similar(word_emb, w2v_emb_weight, k)
-
-    # # RETRIEVE SIMILAR WORDS
-    # word = "man"
-
-    # similar_words_cb = retrieve_similar_words(
-    #     model=model_cb,
-    #     word=word,
-    #     index_map=word_to_index,
-    #     index_to_word=index_to_word,
-    #     k=5,
-    # )
-
-    # similar_words_sg = retrieve_similar_words(
-    #     model=model_sg,
-    #     word=word,
-    #     index_map=word_to_index,
-    #     index_to_word=index_to_word,
-    #     k=5,
-    # )
-
-    # print(f"(CBOW) Words similar to '{word}' are: {similar_words_cb}")
-    # print(f"(Skip-gram) Words similar to '{word}' are: {similar_words_sg}")
-
-    # # COMPUTE WORDS ANALOGIES
-    # a = "man"
-    # b = "woman"
-    # c = "girl"
-
-    # analogies_cb = word_analogy(
-    #     model=model_cb,
-    #     word_a=a,
-    #     word_b=b,
-    #     word_c=c,
-    #     index_map=word_to_index,
-    #     index_to_word=index_to_word,
-    # )
-    # analogies_sg = word_analogy(
-    #     model=model_sg,
-    #     word_a=a,
-    #     word_b=b,
-    #     word_c=c,
-    #     index_map=word_to_index,
-    #     index_to_word=index_to_word,
-    # )
-
-    # print(f"CBOW's analogies for {a} - {b} + {c} are: {analogies_cb}")
-    # print(f"Skip-gram's analogies for {a} - {b} + {c} are: {analogies_sg}")
+    # If you use GPUs, use the code below:
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     # ###################### PART 1: TEST CODE ######################
+    print("=" * 80)
+    print("Running test code for part 1")
+    print("-" * 80)
 
     # Prefilled code showing you how to use the helper functions
+    train_raw, valid_raw = load_datasets(data_path)
+    if sample_size is not None:
+        for key in ["premise", "hypothesis", "label"]:
+            train_raw[key] = train_raw[key][:sample_size]
+            valid_raw[key] = valid_raw[key][:sample_size]
+
+    full_text = (
+        train_raw["premise"]
+        + train_raw["hypothesis"]
+        + valid_raw["premise"]
+        + valid_raw["hypothesis"]
+    )
+
+    # Process into indices
+    tokens = tokenize_w2v(full_text)
+
+    word_counts = build_word_counts(tokens)
+    word_to_index = build_index_map(word_counts, max_words=num_words)
+    index_to_word = {v: k for k, v in word_to_index.items()}
+
+    text_indices = tokens_to_ix(tokens, word_to_index)
+
+    # Test build_current_surrounding_pairs
+    text = "dogs and cats are playing".split()
+    surroundings, currents = build_current_surrounding_pairs(text, window_size=1)
+    print(f"text: {text}")
+    print(f"surroundings: {surroundings}")
+    print(f"currents: {currents}")
+
+    surrounding_expanded, current_expanded = expand_surrounding_words(
+        surroundings, currents
+    )
+    print(f"surrounding_expanded: {surrounding_expanded}")
+    print(f"current_expanded: {current_expanded}\n")
+
+    indices = [word_to_index[t] for t in text]
+    surroundings, currents = build_current_surrounding_pairs(indices, window_size=1)
+    print(f"indices: {indices}")
+    print(f"surroundings: {surroundings}")
+    print(f"currents: {currents}")
+
+    surrounding_expanded, current_expanded = expand_surrounding_words(
+        surroundings, currents
+    )
+    print(f"surrounding_expanded: {surrounding_expanded}")
+    print(f"current_expanded: {current_expanded}")
+
+    # Training CBOW
+    print("Training CBOW...")
+    sources_cb, targets_cb = cbow_preprocessing(text_indices, window_size=2)
+
+    loader_cb = DataLoader(
+        Word2VecDataset(sources_cb, targets_cb),
+        batch_size=batch_size,
+        shuffle=True,
+        collate_fn=collate_cbow,
+    )
+
+    model_cb = CBOW(num_words=len(word_to_index), embed_dim=200).to(device)
+    optimizer = torch.optim.Adam(model_cb.parameters())
+
+    for epoch in range(n_epochs):
+        loss = train_w2v(model_cb, optimizer, loader_cb, device=device).item()
+        print(f"Loss at epoch #{epoch}: {loss:.4f}")
+
+    # Training Skip-Gram
+    print("Training Skip-Gram")
+    sources_sg, targets_sg = skipgram_preprocessing(text_indices, window_size=2)
+
+    loader_sg = DataLoader(
+        Word2VecDataset(sources_sg, targets_sg),
+        batch_size=batch_size,
+        shuffle=True,
+        collate_fn=collate_cbow,
+    )
+
+    model_sg = SkipGram(num_words=len(word_to_index), embed_dim=200).to(device)
+    optimizer = torch.optim.Adam(model_sg.parameters())
+
+    for epoch in range(n_epochs):
+        loss = train_w2v(model_sg, optimizer, loader_sg, device=device).item()
+        print(f"Loss at epoch #{epoch}: {loss:.4f}")
+
+    # Test compute_topk_similar
+    word_emb = model_sg.emb.weight[0, :]
+    w2v_emb_weight = model_sg.emb.weight
+    k = 5
+
+    top_k = compute_topk_similar(word_emb, w2v_emb_weight, k)
+
+    # RETRIEVE SIMILAR WORDS
+    word = "man"
+
+    similar_words_cb = retrieve_similar_words(
+        model=model_cb,
+        word=word,
+        index_map=word_to_index,
+        index_to_word=index_to_word,
+        k=5,
+    )
+
+    similar_words_sg = retrieve_similar_words(
+        model=model_sg,
+        word=word,
+        index_map=word_to_index,
+        index_to_word=index_to_word,
+        k=5,
+    )
+
+    print(f"(CBOW) Words similar to '{word}' are: {similar_words_cb}")
+    print(f"(Skip-gram) Words similar to '{word}' are: {similar_words_sg}")
+
+    # COMPUTE WORDS ANALOGIES
+    a = "man"
+    b = "woman"
+    c = "girl"
+
+    analogies_cb = word_analogy(
+        model=model_cb,
+        word_a=a,
+        word_b=b,
+        word_c=c,
+        index_map=word_to_index,
+        index_to_word=index_to_word,
+    )
+    analogies_sg = word_analogy(
+        model=model_sg,
+        word_a=a,
+        word_b=b,
+        word_c=c,
+        index_map=word_to_index,
+        index_to_word=index_to_word,
+    )
+
+    print(f"CBOW's analogies for {a} - {b} + {c} are: {analogies_cb}")
+    print(f"Skip-gram's analogies for {a} - {b} + {c} are: {analogies_sg}")
+
+    ###################### PART 1: TEST CODE ######################
+
+    # Prefilled code showing you how to use the helper functions
+    print("Loading glove embeddings...")
     word_to_embedding = load_glove_embeddings("data/glove/glove.6B.300d.txt")
 
-    # professions = load_professions("data/professions.tsv")
+    print("Loading professions...")
+    professions = load_professions("data/professions.tsv")
 
-    # gender_attribute_words = load_gender_attribute_words(
-    #     "data/gender_attribute_words.json"
-    # )
+    print("Loading gender attribute_words...")
+    gender_attribute_words = load_gender_attribute_words(
+        "data/gender_attribute_words.json"
+    )
 
-    # # === Section 2.1 ===
-    # gender_subspace = "your work here"
+    # === Section 2.1 ===
+    gender_subspace = compute_gender_subspace(
+        word_to_embedding, gender_attribute_words=[["man", "woman"], ["boy", "girl"]]
+    ).flatten()
 
-    # # === Section 2.2 ===
-    # a = "your work here"
-    # b = "your work here"
-    # scalar_projection, vector_projection = "your work here"
+    # === Section 2.2 ===
+    a = word_to_embedding["doctor"]
+    b = word_to_embedding["nurse"]
+    scalar_projection, vector_projection = project(a, gender_subspace)
 
-    # # === Section 2.3 ===
-    # profession_to_embedding = "your work here"
+    # === Section 2.3 ===
+    profession_to_embedding = compute_profession_embeddings(
+        word_to_embedding, professions
+    )
 
-    # # === Section 2.4 ===
-    # positive_profession_words = "your work here"
-    # negative_profession_words = "your work here"
+    # === Section 2.4 ===
+    positive_profession_words = compute_extreme_words(
+        professions, word_to_embedding, gender_subspace, k=10, max_=True
+    )
+    negative_profession_words = compute_extreme_words(
+        professions, word_to_embedding, gender_subspace, k=10, max_=False
+    )
 
-    # print(f"Max profession words: {positive_profession_words}")
-    # print(f"Min profession words: {negative_profession_words}")
+    print(f"Max profession words: {positive_profession_words}")
+    print(f"Min profession words: {negative_profession_words}")
 
     # # === Section 2.5 ===
-    # direct_bias_professions = "your work here"
+    direct_bias_professions = compute_direct_bias(
+        professions, word_to_embedding, gender_subspace, c=0.25
+    )
 
     # # === Section 2.6 ===
 
-    # # Prepare attribute word sets for testing
-    # A = ["male", "man", "boy", "brother", "he", "him", "his", "son"]
-    # B = ["female", "woman", "girl", "sister", "she", "her", "hers", "daughter"]
+    # Prepare attribute word sets for testing
+    A = ["male", "man", "boy", "brother", "he", "him", "his", "son"]
+    B = ["female", "woman", "girl", "sister", "she", "her", "hers", "daughter"]
 
-    # # Prepare target word sets for testing
-    # X = ["doctor", "mechanic", "engineer"]
-    # Y = ["nurse", "artist", "teacher"]
+    # Prepare target word sets for testing
+    X = ["doctor", "mechanic", "engineer"]
+    Y = ["nurse", "artist", "teacher"]
 
-    # word = "doctor"
-    # weat_association = "your work here"
-    # weat_differential_association = "your work here"
+    word = "doctor"
+    weat_association_ex = weat_association("cowboy", A, B, word_to_embedding)
+    weat_differential_association_ex = weat_differential_association(
+        X, Y, A, B, word_to_embedding, weat_association
+    )
 
-    # # === Section 3.1 ===
-    # debiased_word_to_embedding = "your work here"
-    # debiased_profession_to_embedding = "your work here"
+    # === Section 3.1 ===
+    debiased_word_to_embedding_ex = debias_word_embedding(
+        word, word_to_embedding, gender_subspace
+    )
 
-    # # === Section 3.2 ===
-    # direct_bias_professions_debiased = "your work here"
+    debiased_word_to_embedding = hard_debias(
+        word_to_embedding, gender_attribute_words, n_components=1
+    )
 
-    # print(f"DirectBias Professions (debiased): {direct_bias_professions_debiased:.2f}")
+    # === Section 3.2 ===
+    direct_bias_professions = compute_direct_bias(
+        professions, profession_to_embedding, gender_subspace, c=0.25
+    )
+    print(f"DirectBias Professions: {direct_bias_professions:.2f}")
 
-    # X = [
-    #     "math",
-    #     "algebra",
-    #     "geometry",
-    #     "calculus",
-    #     "equations",
-    #     "computation",
-    #     "numbers",
-    #     "addition",
-    # ]
+    direct_bias_professions_debiased = compute_direct_bias(
+        professions, debiased_word_to_embedding, gender_subspace, c=0.25
+    )
+    print(f"DirectBias Professions (debiased): {direct_bias_professions_debiased:.2f}")
 
-    # Y = [
-    #     "poetry",
-    #     "art",
-    #     "dance",
-    #     "literature",
-    #     "novel",
-    #     "symphony",
-    #     "drama",
-    #     "sculpture",
-    # ]
+    X = [
+        "math",
+        "algebra",
+        "geometry",
+        "calculus",
+        "equations",
+        "computation",
+        "numbers",
+        "addition",
+    ]
 
-    # # Also run this test for debiased profession representations.
-    # p_value = "your work here"
+    Y = [
+        "poetry",
+        "art",
+        "dance",
+        "literature",
+        "novel",
+        "symphony",
+        "drama",
+        "sculpture",
+    ]
 
-    # print(f"p-value: {p_value:.2f}")
+    # Also run this test for debiased profession representations.
+    p_value = p_value_permutation_test(X, Y, A, B, word_to_embedding)
+    print(f"p-value: {p_value:.4f}")
+
+    p_value_debiased = p_value_permutation_test(X, Y, A, B, debiased_word_to_embedding)
+    print(f"p-value debiased: {p_value:.4f}")
+
+    print("Done!")

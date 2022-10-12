@@ -598,8 +598,15 @@ def project(a: np.array, b: np.array) -> "tuple[float, np.array]":
 def compute_profession_embeddings(
     word_to_embedding: "dict[str, np.array]", professions: "list[str]"
 ) -> "dict[str, np.array]":
-    # TODO: your work here
-    pass
+
+    profession_embeddings = {}
+    for profession in professions:
+        embeddings = []
+        for word in profession.split():
+            embeddings.append(word_to_embedding[word])
+        profession_embeddings[profession] = np.mean(embeddings, axis=0)
+
+    return profession_embeddings
 
 
 def compute_extreme_words(

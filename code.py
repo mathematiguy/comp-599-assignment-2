@@ -590,8 +590,9 @@ def compute_gender_subspace(
 
 
 def project(a: np.array, b: np.array) -> "tuple[float, np.array]":
-    # TODO: your work here
-    pass
+    scalar = np.dot(a, b) / np.dot(b, b)
+    vector_projection = scalar * b
+    return scalar, vector_projection
 
 
 def compute_profession_embeddings(
